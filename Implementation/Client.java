@@ -23,12 +23,12 @@ public class Client
 //		user = null;
 //		loggedIn = false;
 //	}
-//	
+//	sdadsad
 //	public boolean getLoggedIn() {
 //		return loggedIn;
 //	}
 //	
-	public Server AccessServer() //Lazy singleton to ensure every "Client" instance only has 1 "server" instance
+	public Server AccessServer() // Lazy singleton to ensure every "Client" instance only has 1 "server" instance
 	{
 		if (server == null) {server = new Server();}
 		return server;
@@ -49,6 +49,7 @@ public class Client
 		User user;
 		Request request = new Request();
 		int requestType;
+		Node node;
 		try(Socket socket = new Socket("localhost", 1234)) {
 			// LOGIN
 			// prompt user for username first
@@ -62,6 +63,11 @@ public class Client
 			//
 			// CREATE NEW USER WITH USERNAME AND PASSWORD
 			user = new User(username, password);
+			// every computer unique name
+			node = new Node(, user);
+			// ask user for name of their computer, pass it into initialized node object
+			
+			
 			// pass new user in to request object, and mark them as logged in
 			request.setUser(user);
 			request.setLoggedIn(true);
@@ -78,6 +84,7 @@ public class Client
 							+ "remove a client from the system (5), or exit (0)?");
 					// get the request type (integer)
 					requestType = scanner.nextInt();
+					// follow up question 
 					request.setRequestType(requestType);
 				}
 			}
@@ -88,6 +95,7 @@ public class Client
 					System.out.print("Would you like to: upload a file(1), request"
 							+ " a file (2), or exit (0)?");
 					requestType = scanner.nextInt();
+					
 					// need to make sure standard user isnt entering supervisor commands
 					while(requestType != 1 || requestType != 2 || requestType != 0)
 					{
@@ -96,11 +104,13 @@ public class Client
 					}
 					
 					request.setRequestType(requestType);
+					// only need to send request to server 
+					
 					//dataOutputStream.writeUTF(userTask);
 					// call taskManager here
-					taskManager(request);
+					//taskManager(request);
 					
-					
+					// send the request to the server
 				}
 			}
 			
@@ -111,28 +121,39 @@ public class Client
 	}
 	
 	// performs the actions of a request
-	private static void taskManager(Request request) {
-		Scanner scan = new Scanner(System.in);
-		if (request.getRequestType() == 0) {
-			request.setLoggedIn(false);
-		}
-		else if (request.getRequestType() == 1) {
-			File file;
-			String name;
-			String path;
-			
-			System.out.println("Enter the name of the file: ");
-			name = scan.nextLine();
-			System.out.println("Enter the path of the file: ");
-			path = scan.nextLine();
-			file = new File(name, path);
-			request.setFile(file);
-		}
-		else if (request.getRequestType() == 2) {
-			
-		}
-		
-	}
+//	private static void taskManager(Request request) {
+//		Scanner scan = new Scanner(System.in);
+//		if (request.getRequestType() == 0) {
+//			request.setLoggedIn(false);
+//		}
+//		else if (request.getRequestType() == 1) {
+//			File file;
+//			String name;
+//			String path;
+//			
+//			
+//			System.out.println("Enter the name of the file: ");
+//			name = scan.nextLine();
+//			System.out.println("Enter the path of the file: ");
+//			path = scan.nextLine();
+//			file = new File(name, path);
+//			request.setFile(file);
+//		}
+//		else if (request.getRequestType() == 2) {
+//			File file;
+//			String name;
+//			String path;
+//			
+//			
+//			System.out.println("Enter the name of the file: ");
+//			name = scan.nextLine();
+//			System.out.println("Enter the path of the file: ");
+//			path = scan.nextLine();
+//			file = new File(name, path);
+//			request.setFile(file);
+//		}
+//		
+//	}
 	
 	
 	// Function to send the file from the client, to the server
@@ -145,6 +166,8 @@ public class Client
 		
 	}
 	public void ReadFile() {}
+	// ?? do we want users to use the DFS to create new files, or should they do this on their systems
+	// and then upload the new file to the DFS?
 	public File CreateFile() {}
 	public void WriteToFile(File file) {}
 	public void AddFileToServer(File file) {}
