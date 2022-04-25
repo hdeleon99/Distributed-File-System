@@ -11,8 +11,11 @@ public class User
 	{
 		this.userID = userID;
 		this.password = password;
-		//If 1st character of "userID" == 'S' set "supervisor" = true
+		if (userID.charAt(0) == 'S') {supervisor = true;} //If 1st character of "userID" == 'S' set "supervisor" = true
 	}
+	
+	public String GetUserID() {return userID;}
+	public String GetPassword() {return password;}
 	
 	public boolean GetUsingClient() {return usingClient;}
 	public void SetUsingClient(boolean usingClient) {this.usingClient = usingClient;}
@@ -22,6 +25,7 @@ public class User
 	public Client GetClient() //Lazy singleton to make sure this "User" instance only uses 1 client software at a time
 	{
 		if (client == null) {client = new Client();}
+		SetUsingClient(true);
 		return client;
 	}
 	
