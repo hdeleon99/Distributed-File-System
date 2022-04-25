@@ -1,12 +1,25 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Log
+public class Log implements Serializable
 {
-	private String[] actions = new String[7];
-	private Date[] dates = new Date[7];
+	private List<String> actions = new ArrayList<String>();
+	private List<Date> dates = new ArrayList<Date>();
 	
 	public Log() {}
 	
-	public void AppendLog(String action, Date date) {}
-	public void ClearLog() {}
+	public void AppendLog(String action, Date date) {
+		actions.add(action);
+		dates.add(date);
+	}
+	public void ClearLog() {
+		actions.clear();
+		dates.clear();
+	}
+	
+	public void printLog() {
+		for(int i = 0; i < actions.size(); i++) {
+			System.out.println(actions.get(i) + "\nDate: " + String.valueOf(dates.get(i)));
+		}
+	}
 }
