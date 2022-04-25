@@ -77,7 +77,7 @@ public class Node
 		if (user.GetUsingClient()) //If "user" is currently using any client software
 		{
 			//Close this user's client software
-			user.GetClient().DisconnectFromServer();
+			user.SetClient(null);
 		}
 		if (UserEqualsUser(currentUser, user)) {currentUser = null;} //If the user being deleted is the current user
 		for (int i = location; i < numUsers - 1; i++) {userList[i] = userList[i + 1];} //Delete this user from list
@@ -94,5 +94,6 @@ public class Node
 	}
 	
 	public int GetNumUsers() {return numUsers;}
+	
 	
 }

@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class User
+public class User implements Serializable
 {
 	private String userID;
 	private String password;
@@ -22,11 +23,11 @@ public class User
 	
 	public boolean GetSupervisor() {return supervisor;}
 	
-	public Client GetClient() //Lazy singleton to make sure this "User" instance only uses 1 client software at a time
+	public void SetClient(Client client)
 	{
-		if (client == null) {client = new Client();}
+		this.client = client;
 		SetUsingClient(true);
-		return client;
 	}
+	
 	
 }
