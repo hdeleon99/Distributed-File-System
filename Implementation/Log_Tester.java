@@ -13,7 +13,6 @@ public class Log_Tester {
 		log.AppendLog("new log", new Date());
 		System.out.println("Testing AppendLog() with parameters: ('new log', new Date()):");
 		log.printLog();
-		assertTrue(true);
 	}
 	
 	@Test
@@ -27,6 +26,5 @@ public class Log_Tester {
 		log.ClearLog();
 		System.out.println("Log after ClearLog():");
 		log.printLog();
-		assertTrue(true);
 	}
 }
