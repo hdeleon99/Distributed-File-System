@@ -1,45 +1,22 @@
+import java.io.Serializable;
+
 //
 // the idea of this class is to have all of the information that we would need to be sending back and forth
 // put into a single object for simplicity
 //
-public class Request{
-	File file;
-	Log log;
-	User user;
-	//
-	// if type is 0: sending a file
-	// if type is 1: requesting a file
-	// if type is 2: requesting to view log
-	// if type is 3: request to remove file
-	// if type is 4: request to remove a client from client list
-	// if type is 5: login request
-	// if type is 6: logout request
-	// if type is 7: creating a new user
-	//
-	// we can have the server handle the request based on the request type
-	//
-
-	
+public class Request implements Serializable{
+	private File file;
+	private Log log;
+	private User user;
+	private String fileName, fileType;
 	private int requestType;
-	//
-	// false means failed request, true means successful request
-	//
-	// ONLY SERVER CHANGING REQUESTSTATUS
-	private boolean requestStatus, loggedIn, loggedOut;
-	//
-	// this is a default request
-	// 
-	// Note: blank file and blank log because we don't know what the client wants to do yet
-	//
-	// Note: we don't know if the user is a supervisor until logged in
-	//
-	// Note: request status is assumed to be failure until server sets it to successful
-	//
+	private boolean requestStatus, loggedIn, sendErrMsg, hidden;
 	public Request() {
-		//file = new File();
+		file = new File("","");
 		log = new Log();
-		requestStatus = loggedIn = loggedOut = false;
-		user = new User();
+		requestStatus = loggedIn = sendErrMsg = hidden = false;
+		
+		fileName = fileType = "";
 	}
 	//
 	// setters
@@ -49,16 +26,23 @@ public class Request{
 	public void setRequestType(int requestType) { this.requestType = requestType; }
 	public void setRequestStatus(boolean requestStatus) { this.requestStatus = requestStatus; }
 	public void setLoggedIn(boolean loggedIn) { this.loggedIn = loggedIn; }
-	public void setLoggedOut(boolean loggedOut) { this.loggedOut = loggedOut; }
 	public void setUser(User user) { this.user = user; }
+	public void setFileName(String fileName) { this.fileName = fileName; }
+	public void setFileType(String fileType) { this.fileType = fileType; }
+	public void setErrStatus(boolean sendErrMsg) { this.sendErrMsg = sendErrMsg; }
+	public void setHidden(boolean hidden) { this.hidden = hidden; }
 	//
 	// getters
 	//
+	public boolean getErrorStatus() { return sendErrMsg; }
 	public File getFile() { return file; }
 	public Log getLog() { return log; }
 	public int getRequestType() { return requestType; }
 	public boolean getRequestStatus() { return requestStatus; }
 	public boolean isLoggedIn() { return loggedIn; }
-	public boolean isLoggedOut() { return loggedOut; }
+	public boolean getHidden() { return hidden; }
 	public User getUser() { return user; }
+	public String getFileName() { return fileName; }
+	public String getFileType() { return fileType; }
+	public String printErrMsg() { return "Error processing request..."; } 
 }
