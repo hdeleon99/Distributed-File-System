@@ -1,3 +1,4 @@
+package dfs_project;
 import java.io.Serializable;
 
 //
@@ -40,6 +41,7 @@ public class Request implements Serializable{
 	public boolean getRequestStatus() { return requestStatus; }
 	public boolean isLoggedIn() { return loggedIn; }
 	public boolean getHidden() { return hidden; }
+	public boolean getErrStatus() { return sendErrMsg; }
 	public User getUser() { return user; }
 	public String getFileName() { return fileName; }
 	public String getFileType() { return fileType; }
