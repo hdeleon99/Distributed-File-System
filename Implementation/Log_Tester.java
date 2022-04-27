@@ -1,9 +1,9 @@
 package testing;
-import dfs_project.Log;
+import dfs_project.Log; 
 import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class Log_Tester {
 	
@@ -13,6 +13,7 @@ public class Log_Tester {
 		log.AppendLog("new log", new Date());
 		System.out.println("Testing AppendLog() with parameters: ('new log', new Date()):");
 		log.printLog();
+		assertTrue(true);
 	}
 	
 	@Test
