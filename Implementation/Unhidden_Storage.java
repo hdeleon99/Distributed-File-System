@@ -55,6 +55,15 @@ public class Unhidden_Storage implements Storage, Serializable
 		return false;
 	}
 	
+	public File GetFile(String name, String type)
+	{
+		for (int i = 0; i < numFiles; i++)
+		{
+			if (fileList[i].GetName().equals(name) && fileList[i].GetType().equals(type)) {return fileList[i];}
+		}
+		return null;
+	}
+	
 	private boolean FileEqualsFile(File file1, File file2)
 	{
 		String name1 = file1.GetName();
