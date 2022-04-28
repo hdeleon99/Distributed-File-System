@@ -1,3 +1,5 @@
+package Main;
+import javax.swing.JOptionPane;
 
 public class Hidden_Storage implements Storage
 {
@@ -8,7 +10,11 @@ public class Hidden_Storage implements Storage
 	
 	public void AppendFileList(File file)
 	{
-		if (FileListContains(file)) {return;} //If "fileList" already contains the file
+		if (FileListContains(file)) //If "fileList" already contains the file
+		{
+			JOptionPane.showMessageDialog(null, "File already exists in Hidden Storage");
+			return;
+		}
 		if (numFiles == fileList.length) //If "fileList" is full, double it's size
 		{
 			File tmp[] = new File[2 * numFiles];
@@ -18,6 +24,7 @@ public class Hidden_Storage implements Storage
 		}
 		fileList[numFiles] = file;
 		++numFiles;
+		JOptionPane.showMessageDialog(null, "Successfully appended file");
 	}
 	
 	public void DeleteFromFileList(String fileName, String fileType)
@@ -29,9 +36,14 @@ public class Hidden_Storage implements Storage
 			String type = fileList[i].GetType();
 			if (fileName.equals(name) && fileType.equals(type)) {location = i; break;}
 		}
-		if (location == -1) {return;} //If the file isn't apart of the file list
+		if (location == -1) //If the file isn't apart of the file list
+		{
+			JOptionPane.showMessageDialog(null, "File doesn't exist in Hidden Storage");
+			return;
+		}
 		for (int i = location; i < numFiles - 1; i++) {fileList[i] = fileList[i + 1];} //Delete this user from list
 		--numFiles;
+		JOptionPane.showMessageDialog(null, "Successfully deleted file");
 	}
 	
 	public boolean FileListContains(File file)

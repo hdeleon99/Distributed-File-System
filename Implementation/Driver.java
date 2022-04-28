@@ -1,3 +1,4 @@
+package Main;
 import java.util.*;
 
 public class Driver
@@ -17,27 +18,11 @@ public class Driver
 		File file1 = new File("SuperHero", "txt");
 		
 		//Node tests
-		node.SetCurrentUser(user2);
-		node.AppendUserList(user3);
-		node.AppendUserList(user4);
-		node.AppendUserList(user5);
-		node.AppendUserList(user6);
-		node.AppendUserList(user7);
-		node.SetCurrentUser(user8);
+		//node.SetCurrentUser(user2);
 		System.out.println(node.GetName());
-		System.out.println(node.GetNumUsers());
 		System.out.println('\n');
 		
 		System.out.println("Current User: " + node.GetCurrentUser().GetUserID() + '\n');
-		
-		for (int i = 0; i < node.GetNumUsers(); i++)
-		{
-			System.out.println(node.GetUserList()[i].GetUserID());
-			System.out.println(node.GetUserList()[i].GetPassword());
-			System.out.println(node.GetUserList()[i].GetSupervisor());
-			System.out.println(node.GetUserList()[i].GetUsingClient());
-			System.out.println('\n');
-		}
 		
 		//File tests
 		node.GetUnhiddenStorage().AppendFileList(file1);

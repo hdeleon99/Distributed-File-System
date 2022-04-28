@@ -1,3 +1,4 @@
+package Main;
 import java.io.Serializable;
 
 public class User implements Serializable
@@ -18,5 +19,14 @@ public class User implements Serializable
 	
 	public boolean GetSupervisor() {return supervisor;}
 	
-	
+	public boolean UserEqualsUser(User user1, User user2)
+	{
+		String ID1 = user1.GetUserID();
+		String password1 = user1.GetPassword();
+		String ID2 = user2.GetUserID();
+		String password2 = user2.GetPassword();
+		
+		if (ID1.equals(ID2) && password1.equals(password2)) {return true;}
+		return false;
+	}
 }
