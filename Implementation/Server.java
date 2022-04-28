@@ -81,7 +81,7 @@ public class Server {
 					rqst.setRequestStatus(true);
 					break;
 			case 2:// request file
-					pos = FilePos(rqst.getFileName(), hidden);
+					pos = FilePos(rqst.getFileName(), rqst.getFileType(), hidden);
 					if(pos != -1) {
 						if(supervisor && hidden) { rqst.setFile(hiddenFiles.get(pos)); }
 						else { rqst.setFile(unhiddenFiles.get(pos)); }
@@ -96,7 +96,7 @@ public class Server {
 				break;
 			case 4:// remove file
 				if(supervisor) {
-					pos = FilePos(rqst.getFileName(), hidden);
+					pos = FilePos(rqst.getFileName(), rqst.getFileType(), hidden);
 					if(pos != -1) {
 						DeleteFromFileList(pos, hidden);
 						logMsg += rqst.getFileName();
@@ -136,15 +136,15 @@ public class Server {
 			else { unhiddenFiles.remove(pos); }
 		}
 		
-		public int FilePos(String fileName, boolean hidden) {
+		public int FilePos(String fileName, String fileType, boolean hidden) {
 			if(hidden) {
 				for(int i = 0; i < hiddenFiles.size(); i++) {
-					if(fileName.equals(hiddenFiles.get(i).GetName())) { return i; }
+					if(fileName.equals(hiddenFiles.get(i).GetName()) && fileType.equals(hiddenFiles.get(i).GetType())) { return i; }
 				}
 			}
 			else {
 				for(int i = 0; i < unhiddenFiles.size(); i++) {
-					if(fileName.equals(unhiddenFiles.get(i).GetName())) { return i; }
+					if(fileName.equals(unhiddenFiles.get(i).GetName()) && fileType.equals(unhiddenFiles.get(i).GetType())) { return i; }
 				}
 			}
 			return -1;// -1 means file is not present
