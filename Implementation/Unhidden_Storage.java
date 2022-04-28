@@ -1,7 +1,8 @@
 package Main;
+import java.io.Serializable;
 import javax.swing.JOptionPane;
 
-public class Unhidden_Storage implements Storage
+public class Unhidden_Storage implements Storage, Serializable
 {
 	private File[] fileList = new File[7]; //Base line storage is 7
 	private int numFiles = 0;

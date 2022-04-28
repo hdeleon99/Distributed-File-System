@@ -1,7 +1,8 @@
 package Main;
+import java.io.Serializable;
 import javax.swing.*;
 
-public class Node
+public class Node implements Serializable
 {
 	private String name; //Name of this node
 	private Hidden_Storage hiddenStorage = new Hidden_Storage();
