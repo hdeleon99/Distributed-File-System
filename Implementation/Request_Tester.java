@@ -1,8 +1,9 @@
 package testing;
-import dfs_project.File;   
+import dfs_project.File;    
 import dfs_project.User;
 import dfs_project.Log;
 import dfs_project.Request;
+import dfs_project.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +36,15 @@ public class Request_Tester {
 		rqst.setFileType(filetype);
 		System.out.println("Testing setFileType()");
 		assertTrue(rqst.getFileType().equals(filetype));
+	}
+	
+	@Test
+	public void setNode_test() {
+		Node node = new Node("name", new User());
+		Request rqst = new Request();
+		rqst.setNode(node);
+		System.out.println("Testing setNode()");
+		assertTrue(rqst.getNode().equals(node));
 	}
 	
 	@Test
