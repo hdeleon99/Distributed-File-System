@@ -6,6 +6,7 @@ import java.io.Serializable;
 // put into a single object for simplicity
 //
 public class Request implements Serializable{
+	private Node node;
 	private File file;
 	private Log log;
 	private User user;
@@ -32,6 +33,7 @@ public class Request implements Serializable{
 	public void setFileType(String fileType) { this.fileType = fileType; }
 	public void setErrStatus(boolean sendErrMsg) { this.sendErrMsg = sendErrMsg; }
 	public void setHidden(boolean hidden) { this.hidden = hidden; }
+	public void setNode(Node node) { this.node = node; }
 	//
 	// getters
 	//
@@ -46,4 +48,5 @@ public class Request implements Serializable{
 	public String getFileName() { return fileName; }
 	public String getFileType() { return fileType; }
 	public String printErrMsg() { return "Error processing request..."; } 
+	public Node getNode() { return node; }
 }
