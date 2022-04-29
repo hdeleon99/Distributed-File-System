@@ -22,10 +22,8 @@ public class Log_Tester {
 		log.AppendLog("log1", new Date());
 		log.AppendLog("log2", new Date());
 		log.AppendLog("log3", new Date());
-		System.out.println("Testing ClearLog():\nLog before ClearLog():");
-		log.printLog();
+		System.out.println("Testing ClearLog():\nLog before ClearLog():\n" + log.printLog());
 		log.ClearLog();
-		System.out.println("Log after ClearLog():");
-		log.printLog();
+		System.out.println("Log after ClearLog():\n" + log.printLog());
 	}
 }
