@@ -11,10 +11,9 @@ import java.util.*;
 
 public class Server {
 	private static Log log = new Log(); //Eager singleton to ensure only 1 log | "static" shares this log across the entire system
-	private static List<File> hiddenFiles = new ArrayList<File>();
-	private static List<File> unhiddenFiles = new ArrayList<File>();
+	private static List<Node> nodes = new ArrayList<Node>();
 	private static String [] logActions = {"Exited system : userID ->", "Uploaded file :", "Downloaded file :",
-											"Viewed log : userID ->", "Removed file "};
+											"Viewed log : userID ->", "Removed file ", "Signed up : Device Name ->"};
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
@@ -66,42 +65,42 @@ public class Server {
 		public Request handleRequest(Request rqst){
 			boolean hidden = rqst.getHidden();
 			boolean supervisor = rqst.getUser().GetSupervisor();
-			int pos;
 			String logMsg = "";
+			// making sure that the node exists in the node list by default
+			if(!nodes.contains(rqst.getNode())) {
+				nodes.add(rqst.getNode());
+				logMsg += logActions[5] + rqst.getNode().GetName() + "\n";
+			}
+			int pos = NodePos(rqst.getNode());
 			switch(rqst.getRequestType()) {
 			case 0:// exit
-					rqst.setLoggedIn(false);
-					rqst.setRequestStatus(true);
-					logMsg += rqst.getUser().getID();
+				rqst.setLoggedIn(false);
+				rqst.setRequestStatus(true);
+				nodes.remove(pos);
+				logMsg += rqst.getUser().getID();
 				break;
 			case 1:// upload file
-					if(supervisor && hidden) { AppendFileList(rqst.getFile(),true); }
-					else { AppendFileList(rqst.getFile(), false); }
+				AppendFileList(rqst.getFile(), pos, hidden, supervisor);
+				logMsg += rqst.getFileName();
+				rqst.setRequestStatus(true);
+				break;
+			case 2:// request file
+				if(containsFile(pos, rqst.getFile() , hidden)) {
+					rqst.setFile(getFile(pos, hidden, rqst.getFileName(), rqst.getFileType()));
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
-					break;
-			case 2:// request file
-					pos = FilePos(rqst.getFileName(), rqst.getFileType(), hidden);
-					if(pos != -1) {
-						if(supervisor && hidden) { rqst.setFile(hiddenFiles.get(pos)); }
-						else { rqst.setFile(unhiddenFiles.get(pos)); }
-						logMsg += rqst.getFileName();
-						rqst.setRequestStatus(true);
-					}
-					break;
+				}
+				break;
 			case 3:// view log
 				if(supervisor) { rqst.setLog(log); }
 				rqst.setRequestStatus(true);
 				logMsg += rqst.getUser().getID();
 				break;
 			case 4:// remove file
-				if(supervisor) {
-					pos = FilePos(rqst.getFileName(), rqst.getFileType(), hidden);
-					if(pos != -1) {
-						DeleteFromFileList(pos, hidden);
-						logMsg += rqst.getFileName();
-						rqst.setRequestStatus(true);
-					}
+				if(supervisor && containsFile(pos, rqst.getFile(), hidden)) {
+					DeleteFromFileList(pos, hidden, rqst.getFileName(), rqst.getFileType());
+					logMsg += rqst.getFileName();
+					rqst.setRequestStatus(true);
 				}
 				break;
 			case 5:// clearing log
@@ -114,42 +113,52 @@ public class Server {
 				shutdown = true;
 				break;
 			}
-			// if successful request and not clearing log and shutting server down -> append log
+			// if successful request and not clearing log and not shutting server down -> append log
 			if(rqst.getRequestStatus() && rqst.getRequestType() != 5 && rqst.getRequestType() != 6) {
-				AppendLog(logActions[rqst.getRequestType()] + logMsg, new Date());
+				AppendLog(logActions[rqst.getRequestType()] + logMsg);
 			}
 			// if failed request -> send error message
 			else if(!rqst.getRequestStatus()) { rqst.setErrStatus(true); }
 			return rqst;
 		}
 
-		public void AppendLog(String action, Date date) { log.AppendLog(action, date); }
+		public void AppendLog(String action) { log.AppendLog(action, new Date()); }
 		public void ClearLog() { log.ClearLog(); }
 		
-		public void AppendFileList(File file, boolean hidden) {
-			if(hidden) { hiddenFiles.add(file); }
-			else { unhiddenFiles.add(file); }
-		}
-		
-		public void DeleteFromFileList(int pos, boolean hidden) {	
-			if(hidden) { hiddenFiles.remove(pos); }
-			else { unhiddenFiles.remove(pos); }
-		}
-		
-		public int FilePos(String fileName, String fileType, boolean hidden) {
-			if(hidden) {
-				for(int i = 0; i < hiddenFiles.size(); i++) {
-					if(fileName.equals(hiddenFiles.get(i).GetName()) && fileType.equals(hiddenFiles.get(i).GetType())) { return i; }
-				}
+		public void AppendFileList(File file, int pos, boolean hidden, boolean supervisor) {
+			if(hidden && supervisor) {
+				nodes.get(pos).GetHiddenStorage().AppendFileList(file);
 			}
 			else {
-				for(int i = 0; i < unhiddenFiles.size(); i++) {
-					if(fileName.equals(unhiddenFiles.get(i).GetName()) && fileType.equals(unhiddenFiles.get(i).GetType())) { return i; }
-				}
+				nodes.get(pos).GetUnhiddenStorage().AppendFileList(file);
 			}
-			return -1;// -1 means file is not present
 		}
 		
+		public void DeleteFromFileList(int pos, boolean hidden, String fileName, String fileType) {
+			if(hidden) {
+				nodes.get(pos).GetHiddenStorage().DeleteFromFileList(fileName, fileType);
+			}
+			else {
+				nodes.get(pos).GetUnhiddenStorage().DeleteFromFileList(fileName, fileType);
+			}
+		}
+		
+		public int NodePos(Node node) { return nodes.indexOf(node); }
+		
 		public boolean getShutDown() { return shutdown; }
+		
+		public boolean containsFile(int pos, File file, boolean hidden) {
+			if(hidden) {
+				return nodes.get(pos).GetHiddenStorage().FileListContains(file);
+			}
+			return nodes.get(pos).GetUnhiddenStorage().FileListContains(file);
+		}
+		
+		public File getFile(int pos, boolean hidden, String fileName, String fileType) {
+			if(hidden) {
+				return nodes.get(pos).GetHiddenStorage().GetFile(fileName, fileType);
+			}
+			return nodes.get(pos).GetUnhiddenStorage().GetFile(fileName,fileType);
+		}
 	}
 }
