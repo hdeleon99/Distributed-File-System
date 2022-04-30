@@ -65,7 +65,7 @@ public class Hidden_Storage implements Storage, Serializable
 		return null;
 	}
 	
-	private boolean FileEqualsFile(File file1, File file2)
+	public boolean FileEqualsFile(File file1, File file2)
 	{
 		String name1 = file1.GetName();
 		String type1 = file1.GetType();
