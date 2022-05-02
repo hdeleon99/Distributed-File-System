@@ -1,155 +1,270 @@
+package Main;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.awt.FlowLayout;
+import javax.swing.*;
 
-
-// sources for help: 
-// https://heptadecane.medium.com/file-transfer-via-java-sockets-e8d4f30703a5
 public class Client
 {
-	private boolean loggedIn = false;
-	private User user;
-	private static Server server = null; //Static means this variable is shared across all "Client" instances
-	
-//	public Client() {}
-	
-//	public void LogIn(User user)
-//	{
-//		this.user = user;
-//		loggedIn = true;
-//	}
-//	public void LogOut()
-//	{
-//		user = null;
-//		loggedIn = false;
-//	}
-//	
-//	public boolean getLoggedIn() {
-//		return loggedIn;
-//	}
-//	
-	public Server AccessServer() //Lazy singleton to ensure every "Client" instance only has 1 "server" instance
-	{
-		if (server == null) {server = new Server();}
-		return server;
-	}
-	
-	public void CloseServer()
-	{
-		//Remove this client from the server's "client list"
-		//If the client list is 0 after above operation, close server
-	}
-	
-	
-	public static void main(String[] args) throws UnknownHostException, IOException {
 		
-		DataOutputStream dataOutputStream = null;
-		DataInputStream dataInputStream = null;
-		Scanner scanner = new Scanner(System.in);
-		User user;
-		Request request = new Request();
-		int requestType;
-		try(Socket socket = new Socket("localhost", 1234)) {
-			// LOGIN
-			// prompt user for username first
-			System.out.println("Enter a username: ");
-			String username = scanner.nextLine();
+	public Client() {}
+	
+
+	public static void main(String[] args) throws UnknownHostException, IOException {
+		try 
+		{
 			
-			// then prompt for password
-			System.out.println("Enter a password");
-			String password = scanner.nextLine();
+			User user;
+			Scanner scanner = new Scanner(System.in);
+			Request request = new Request();
+			Socket socket = new Socket();
+			Node node;
 			
-			//
-			// CREATE NEW USER WITH USERNAME AND PASSWORD
+			//String nodeName = "";
+			// ask user for name of their computer, pass it into initialized node object
+			String nodeName = JOptionPane.showInputDialog("Enter the name of your system: ");
+			
+			String username = JOptionPane.showInputDialog("Enter a username: ");
+			String password = JOptionPane.showInputDialog("Enter a password: ");		
+			
+			
+			JOptionPane.showMessageDialog(null, "Logged in as " + username);
+			
 			user = new User(username, password);
+			
+			node = new Node(nodeName, user);
+			
+			
 			// pass new user in to request object, and mark them as logged in
-			request.setUser(user);
+			request.getNode().SetCurrentUser(user);
 			request.setLoggedIn(true);
-			
-			dataInputStream = new DataInputStream(socket.getInputStream());
-			dataOutputStream = new DataOutputStream(socket.getOutputStream());
-			
-			// check if user is supervisor, present them with their options
-			if(user.GetSupervisor()) {
-				// while the user associated with this request is marked as logged in
-				while(request.isLoggedIn()) {
-					System.out.print("Would you like to: upload a file(1), request"
-							+ " a file (2), view the log (3), remove a file (4), "
-							+ "remove a client from the system (5), or exit (0)?");
-					// get the request type (integer)
-					requestType = scanner.nextInt();
-					request.setRequestType(requestType);
+			request.setNode(node);
+			while(request.isLoggedIn()) {
+				request.setErrStatus(false);
+				request.setRequestStatus(false);
+				socket = new Socket("localhost", 1225);
+				
+				request = getRequest(request, node, scanner, user);
+				
+				OutputStream outputStream = socket.getOutputStream();                  
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+				objectOutputStream.writeObject(request);
+
+				InputStream inputStream = socket.getInputStream();                 
+				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+				request = (Request) objectInputStream.readObject();
+				System.out.println("Request status: " + request.getRequestStatus());
+				//readRequestFromServer(request);
+				if (request.getErrStatus()) {
+					JOptionPane.showMessageDialog(null, request.printErrMsg());
 				}
+				inputStream.close();
 			}
-			// if user is not supervisor, show them their options
-			else if(!user.GetSupervisor()) {
-				while(request.isLoggedIn()) {
+			// set node.currentUser(null);
+			scanner.close();
+			socket.close();
+			
+			
+		} catch (Exception e) { e.printStackTrace();} 
+
+}
+	private static Request getRequest(Request request, Node node, Scanner scanner, User user) {
+		
+		
+		if(user.GetSupervisor()) {
+			
+			// get the request type (integer)
+			String[] superCommands = { "Logout",
+									"Add file",
+									"Search for file",
+									"View the log",
+									"Remove a file",
+									"Clear the log",
+									"Exit"};
+			// -1 is a placeholder value for the do/while loop
+			int requestType = -1;
+			
+			do {
+				requestType = JOptionPane.showOptionDialog(null, "Select an option", 
+						"Distributed File System", 
+						JOptionPane.YES_NO_CANCEL_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						superCommands, 
+						superCommands[superCommands.length-1]);
+				
+				switch (requestType) 
+				{
+					case 0: request.setRequestType(requestType); // logout
+					case 1: request.setRequestType(requestType); // add file
+					case 2: request.setRequestType(requestType); // get file
+					case 3: request.setRequestType(requestType); // view log
+					case 4: request.setRequestType(requestType); // remove file
+					case 5: request.setRequestType(requestType); // clear log
+					case 6: request.setRequestType(requestType); // exit client and server
+				}
+				request = requestHelper(request, node, scanner, user);
+				
+			} while(requestType == -1);
+	
+
+			// follow up question 
+			
+		}
+		else if(!user.GetSupervisor()) {
+			String[] stdCommands = 
+					{"Logout",
+					"Add file",
+					"Search for file",
+					};
+			int requestType = -1;
+
+			do {
+				requestType = JOptionPane.showOptionDialog(null, "Select an option", 
+						"Distributed File System", 
+						JOptionPane.YES_NO_CANCEL_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, 
+						stdCommands, 
+						stdCommands[stdCommands.length-1]);
+
+				switch (requestType) 
+				{
+					case 0: request.setRequestType(requestType); // logout
+					case 1: request.setRequestType(requestType); // add file
+					case 2: request.setRequestType(requestType); // get file
 					
-					System.out.print("Would you like to: upload a file(1), request"
-							+ " a file (2), or exit (0)?");
-					requestType = scanner.nextInt();
-					// need to make sure standard user isnt entering supervisor commands
-					while(requestType != 1 || requestType != 2 || requestType != 0)
-					{
-						System.out.print("Invalid request type! Try again...");
-						requestType = scanner.nextInt();
+				}
+				
+				request = requestHelper(request, node, scanner, user);
+
+			} while(requestType == -1);
+
+				
+			
+		}
+		return request;
+	}
+	
+
+	private static Request requestHelper(Request request, Node node, Scanner scanner, User user) {
+		String hiddenStatus;
+		
+		//	if request status is true, then this is a request from the server
+		//		so handle request as being from server
+		//      ex: we can print that file has been successfully uploaded to DFS
+		//      ex: or, if requestType is 3 and requestStatus is true, then we can call the printLog function
+		//	else if request status not true, then this is a request being sent from the client
+		//  	so do the code below (prompt user for hidden/unhidden 
+		
+
+		if(request.getRequestType() == 0) {
+			request.setLoggedIn(false);
+			user = null;
+		}
+
+		else if (request.getRequestType() == 1 && !request.getRequestStatus()) {
+			File file;
+			String name = JOptionPane.showInputDialog("Enter the name of the file to add: ");
+			String type = JOptionPane.showInputDialog("Enter the file type: " );
+			
+			file = new File(name, type);
+
+			boolean run = true;
+			while(run) {
+				if(request.getNode().GetCurrentUser().GetSupervisor()) {
+
+					hiddenStatus = JOptionPane.showInputDialog("Will this file be hidden or unhidden? ");
+					if(hiddenStatus.equalsIgnoreCase("hidden")) {
+						request.setHidden(true);
+						run = false;
+					}
+					else if(hiddenStatus.equalsIgnoreCase("unhidden")) {
+						request.setHidden(false);
+						run = false;
 					}
 					
-					request.setRequestType(requestType);
-					//dataOutputStream.writeUTF(userTask);
-					// call taskManager here
-					taskManager(request);
-					
-					
+					else {
+						hiddenStatus = JOptionPane.showInputDialog("Invalid input. Will this file be hidden or unhidden? ");
+					}
 				}
+				run = false;
 			}
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	// performs the actions of a request
-	private static void taskManager(Request request) {
-		Scanner scan = new Scanner(System.in);
-		if (request.getRequestType() == 0) {
-			request.setLoggedIn(false);
-		}
-		else if (request.getRequestType() == 1) {
-			File file;
-			String name;
-			String path;
-			
-			System.out.println("Enter the name of the file: ");
-			name = scan.nextLine();
-			System.out.println("Enter the path of the file: ");
-			path = scan.nextLine();
-			file = new File(name, path);
+
 			request.setFile(file);
 		}
+		
 		else if (request.getRequestType() == 2) {
+			File requestedFile; 
+			String name = JOptionPane.showInputDialog("Enter the name of the file to request: ");;
 			
+			boolean run = true;
+			while(run) {
+				if(request.getNode().GetCurrentUser().GetSupervisor()) {
+					
+					hiddenStatus = JOptionPane.showInputDialog("Is this file hidden or unhidden? ");
+					if(hiddenStatus.equalsIgnoreCase("hidden")) {
+						request.setHidden(true);
+						run = false;
+					}
+					else if(hiddenStatus.equalsIgnoreCase("unhidden")) {
+						request.setHidden(false);
+						run = false;
+					}
+					
+					else {
+						hiddenStatus = JOptionPane.showInputDialog("Invalid input. Will this file be hidden or unhidden? ");
+					}
+				}
+				run = false;
+			}
+			
+			String type = JOptionPane.showInputDialog("Enter the file type: " );
+
+			requestedFile = new File(name, type);
+			request.setFile(requestedFile);
 		}
 		
-	}
-	
-	
-	// Function to send the file from the client, to the server
-	private static void sendFile(String path) throws Exception{
-		int bytes = 0;
-		File file;
-		// will need to get file name
+		else if (request.getRequestType() == 3) {
+			// CALL
+			JOptionPane.showMessageDialog(null, request.getLog().toString());
+		}
 		
-		FileInputStream fileInputStream = new FileInputStream(file);
-		
+		else if (request.getRequestType() == 4) {
+			File removeFile; 
+			String name = JOptionPane.showInputDialog("Enter the name of the file to remove: ");;
+			
+			boolean run = true;
+			while(run) {
+				if(request.getNode().GetCurrentUser().GetSupervisor()) {
+					
+					hiddenStatus = JOptionPane.showInputDialog("Is this file hidden or unhidden? ");
+					if(hiddenStatus.equalsIgnoreCase("hidden")) {
+						request.setHidden(true);
+						run = false;
+					}
+					else if(hiddenStatus.equalsIgnoreCase("unhidden")) {
+						request.setHidden(false);
+						run = false;
+					}
+					
+					else {
+						hiddenStatus = JOptionPane.showInputDialog("Invalid input. Will this file be hidden or unhidden? ");
+					}
+				}
+				run = false;
+			}
+			
+			String type = JOptionPane.showInputDialog("Enter the file type: " );
+
+			removeFile = new File(name, type);
+			request.setFile(removeFile);
+			JOptionPane.showMessageDialog(null, "Request file name from client object" + request.getFileName());
+		}
+
+		return request;
 	}
-	public void ReadFile() {}
-	public File CreateFile() {}
-	public void WriteToFile(File file) {}
-	public void AddFileToServer(File file) {}
-	public void CopyFile(File file) {}
-	public void DeleteFileFromServer(File file) {}
-	public File[] GetAllHiddenFiles() {}
-	public File[] GetAllUnhiddenFiles() {}
+
 }
