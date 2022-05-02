@@ -11,8 +11,7 @@ public class Log_Tester {
 	public void AppendLog_test() {
 		Log log = new Log();
 		log.AppendLog("new log", new Date());
-		System.out.println("Testing AppendLog() with parameters: ('new log', new Date()):");
-		log.printLog();
+		System.out.println("Testing AppendLog() with parameters: ('new log', new Date()):\n" + log.printLog());
 		assertTrue(true);
 	}
 	
