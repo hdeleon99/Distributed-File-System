@@ -57,15 +57,6 @@ public class Request_Tester {
 	}
 	
 	@Test
-	public void setUser_test() {
-		User user = new User();
-		Request rqst = new Request();
-		rqst.setUser(user);
-		System.out.println("Testing setUser()");
-		assertTrue(rqst.getUser().equals(user));
-	}
-	
-	@Test
 	public void setRequestStatus_test() {
 		Request rqst = new Request();
 		rqst.setRequestStatus(true);
