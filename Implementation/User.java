@@ -11,7 +11,7 @@ public class User implements Serializable
 	{
 		this.userID = userID;
 		this.password = password;
-		if (userID.charAt(0) == 'S') {supervisor = true;} //If 1st character of "userID" == 'S' set "supervisor" = true
+		if (userID.charAt(0) == '!') {supervisor = true;} //If 1st character of "userID" == '!' set "supervisor" = true
 	}
 	
 	public String GetUserID() {return userID;}

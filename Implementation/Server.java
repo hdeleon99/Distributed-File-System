@@ -64,7 +64,7 @@ public class Server {
 			
 		public Request handleRequest(Request rqst){
 			boolean hidden = rqst.getHidden();
-			boolean supervisor = rqst.getUser().GetSupervisor();
+			boolean supervisor = rqst.getNode().GetCurrentUser().GetSupervisor();
 			String logMsg = "";
 			// making sure that the node exists in the node list by default
 			if(!nodes.contains(rqst.getNode())) {
@@ -77,7 +77,7 @@ public class Server {
 				rqst.setLoggedIn(false);
 				rqst.setRequestStatus(true);
 				nodes.remove(pos);
-				logMsg += rqst.getUser().GetUserID();
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 1:// upload file
 				AppendFileList(rqst.getFile(), pos, hidden, supervisor);
@@ -94,7 +94,7 @@ public class Server {
 			case 3:// view log
 				if(supervisor) { rqst.setLog(log); }
 				rqst.setRequestStatus(true);
-				logMsg += rqst.getUser().GetUserID();
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 4:// remove file
 				if(supervisor && containsFile(pos, rqst.getFile(), hidden)) {
