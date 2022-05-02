@@ -8,9 +8,7 @@ import javax.swing.*;
 public class Client
 {
 		
-	public Client(){
-		
-	}
+	public Client(){}
 	
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -34,12 +32,12 @@ public class Client
 			JOptionPane.showMessageDialog(null, "Logged in as " + username);
 			
 			user = new User(username, password);
-			
 			node = new Node(nodeName, user);
 			
 			
-			// pass new user in to request object, and mark them as logged in
+			// pass in user & node to request object, then mark them as logged in
 			request.setUser(user);
+			request.setNode(node);
 			request.setLoggedIn(true);
 			
 			while(request.isLoggedIn()) {
