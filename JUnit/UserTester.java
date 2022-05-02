@@ -19,7 +19,7 @@ public class UserTester
 	@Test
 	public void testSupervisorStatus()
 	{
-		User user1 = new User("Smanny", "red");
+		User user1 = new User("!Smith", "red");
 		User user2 = new User("John", "blue");
 		assertTrue(user1.GetSupervisor() && !user2.GetSupervisor());
 	}
