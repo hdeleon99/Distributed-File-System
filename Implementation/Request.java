@@ -1,3 +1,4 @@
+package mainpackage;
 import java.io.Serializable;
 
 //
@@ -11,8 +12,9 @@ public class Request implements Serializable{
 	private String fileName, fileType;
 	private int requestType;
 	private boolean requestStatus, loggedIn, sendErrMsg, hidden;
+	private Node node;
 	public Request() {
-		file = new File("","");
+		//file = new File("","");
 		log = new Log();
 		requestStatus = loggedIn = sendErrMsg = hidden = false;
 		
@@ -21,7 +23,13 @@ public class Request implements Serializable{
 	//
 	// setters
 	//
-	public void setFile(File file) { this.file = file; }
+	public void setNode(Node node) {this.node = node;}
+	public void setFile(File file) 
+		{
+		this.file = file;
+		this.fileName = file.GetName();
+		this.fileType = file.GetType();
+		}
 	public void setLog(Log log) { this.log = log; }// Log class should have a print method
 	public void setRequestType(int requestType) { this.requestType = requestType; }
 	public void setRequestStatus(boolean requestStatus) { this.requestStatus = requestStatus; }
@@ -34,6 +42,7 @@ public class Request implements Serializable{
 	//
 	// getters
 	//
+	public Node getNode() {return node;}
 	public boolean getErrorStatus() { return sendErrMsg; }
 	public File getFile() { return file; }
 	public Log getLog() { return log; }
