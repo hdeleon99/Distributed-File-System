@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Request implements Serializable{
 	private File file;
 	private Log log;
-	private User user;
+//	private User user;
 	private String fileName, fileType;
 	private int requestType;
 	private boolean requestStatus, loggedIn, sendErrMsg, hidden;
@@ -34,7 +34,7 @@ public class Request implements Serializable{
 	public void setRequestType(int requestType) { this.requestType = requestType; }
 	public void setRequestStatus(boolean requestStatus) { this.requestStatus = requestStatus; }
 	public void setLoggedIn(boolean loggedIn) { this.loggedIn = loggedIn; }
-	public void setUser(User user) { this.user = user; }
+	//public void setUser(User user) { this.user = user; }
 	public void setFileName(String fileName) { this.fileName = fileName; }
 	public void setFileType(String fileType) { this.fileType = fileType; }
 	public void setErrStatus(boolean sendErrMsg) { this.sendErrMsg = sendErrMsg; }
@@ -50,7 +50,7 @@ public class Request implements Serializable{
 	public boolean getRequestStatus() { return requestStatus; }
 	public boolean isLoggedIn() { return loggedIn; }
 	public boolean getHidden() { return hidden; }
-	public User getUser() { return user; }
+	//public User getUser() { return user; }
 	public String getFileName() { return fileName; }
 	public String getFileType() { return fileType; }
 	public String printErrMsg() { return "Error processing request..."; } 
