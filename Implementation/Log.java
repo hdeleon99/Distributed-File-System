@@ -18,11 +18,12 @@ public class Log implements Serializable
 		dates.clear();
 	}
 	
-	public String toString() {
-		String line = "";
+	public String printLog() {
+		String str = "";
 		for(int i = 0; i < actions.size(); i++) {
-			line += actions.get(i) + "\nDate: " + String.valueOf(dates.get(i));
+			
+			str += (actions.get(i) + "\nDate: " + String.valueOf(dates.get(i)));
 		}
-		return line;
+		return str;
 	}
 }

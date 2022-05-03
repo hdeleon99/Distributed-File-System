@@ -8,7 +8,9 @@ import javax.swing.*;
 public class Client
 {
 		
-	public Client() {}
+	public Client(){
+		
+	}
 	
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -21,7 +23,6 @@ public class Client
 			Socket socket = new Socket();
 			Node node;
 			
-			//String nodeName = "";
 			// ask user for name of their computer, pass it into initialized node object
 			String nodeName = JOptionPane.showInputDialog("Enter the name of your system: ");
 			
@@ -35,15 +36,15 @@ public class Client
 			
 			node = new Node(nodeName, user);
 			
-			
+			request.setNode(node);
 			// pass new user in to request object, and mark them as logged in
 			request.getNode().SetCurrentUser(user);
 			request.setLoggedIn(true);
-			request.setNode(node);
+			
 			while(request.isLoggedIn()) {
 				request.setErrStatus(false);
 				request.setRequestStatus(false);
-				socket = new Socket("localhost", 1225);
+				socket = new Socket("localhost", 1238);
 				
 				request = getRequest(request, node, scanner, user);
 				
@@ -55,8 +56,8 @@ public class Client
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 				request = (Request) objectInputStream.readObject();
 				System.out.println("Request status: " + request.getRequestStatus());
-				//readRequestFromServer(request);
-				if (request.getErrStatus()) {
+				readRequestFromServer(request);
+				if (request.getErrorStatus()) {
 					JOptionPane.showMessageDialog(null, request.printErrMsg());
 				}
 				inputStream.close();
@@ -69,6 +70,21 @@ public class Client
 		} catch (Exception e) { e.printStackTrace();} 
 
 }
+	private static void readRequestFromServer(Request request) {
+		if(request.getRequestStatus()) {
+			if(request.getRequestType() == 2) {
+				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was found! " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
+			}
+			
+		}
+		else if(!request.getRequestStatus()) {
+			
+			if(request.getRequestType() == 2) {
+				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was not found. " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
+			}
+			
+		}
+	}
 	private static Request getRequest(Request request, Node node, Scanner scanner, User user) {
 		
 		
@@ -229,7 +245,7 @@ public class Client
 		
 		else if (request.getRequestType() == 3) {
 			// CALL
-			JOptionPane.showMessageDialog(null, request.getLog().toString());
+			JOptionPane.showMessageDialog(null, request.getLog().printLog());
 		}
 		
 		else if (request.getRequestType() == 4) {
@@ -261,7 +277,7 @@ public class Client
 
 			removeFile = new File(name, type);
 			request.setFile(removeFile);
-			JOptionPane.showMessageDialog(null, "Request file name from client object" + request.getFileName());
+			
 		}
 
 		return request;

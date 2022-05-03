@@ -18,7 +18,7 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(1234);
+			server = new ServerSocket(1238);
 			server.setReuseAddress(true);
 			boolean shutdown = false;
 			while (!shutdown) {
@@ -152,6 +152,21 @@ public class Server {
 				return nodes.get(pos).GetHiddenStorage().FileListContains(file);
 			}
 			return nodes.get(pos).GetUnhiddenStorage().FileListContains(file);
+			/*if (hidden)
+			{
+				for (int i = 0; i < nodes.size(); i++)
+				{
+					if (nodes.get(i).GetHiddenStorage().FileListContains(file)) {return true;}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < nodes.size(); i++)
+				{
+					if (nodes.get(i).GetUnhiddenStorage().FileListContains(file)) {return true;}
+				}
+			}
+			return false;*/
 		}
 		
 		public File getFile(int pos, boolean hidden, String fileName, String fileType) {
