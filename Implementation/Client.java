@@ -37,15 +37,15 @@ public class Client
 			
 			node = new Node(nodeName, user);
 			
-			
+			request.setNode(node);
 			// pass new user in to request object, and mark them as logged in
 			request.getNode().SetCurrentUser(user);
 			request.setLoggedIn(true);
-			request.setNode(node);
+			
 			while(request.isLoggedIn()) {
 				request.setErrStatus(false);
 				request.setRequestStatus(false);
-				socket = new Socket("localhost", 1225);
+				socket = new Socket("localhost", 1228);
 				
 				request = getRequest(request, node, scanner, user);
 				
@@ -57,7 +57,7 @@ public class Client
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 				request = (Request) objectInputStream.readObject();
 				System.out.println("Request status: " + request.getRequestStatus());
-				//readRequestFromServer(request);
+				readRequestFromServer(request);
 				if (request.getErrorStatus()) {
 					JOptionPane.showMessageDialog(null, request.printErrMsg());
 				}
@@ -71,30 +71,21 @@ public class Client
 		} catch (Exception e) { e.printStackTrace();} 
 
 }
-//	private static void readRequestFromServer(Request request) {
-//		if(request.getRequestStatus()) {
-//			if(request.getRequestType() == 1) {
-//				JOptionPane.showMessageDialog(null, "File was uploaded successfully! Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//			else if(request.getRequestType() == 2) {
-//				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was found! " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//			else if(request.getRequestType() == 4) {
-//				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was removed! " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//		}
-//		else if(!request.getRequestStatus()) {
-//			if(request.getRequestType() == 1) {
-//				JOptionPane.showMessageDialog(null, "File upload was unsuccessful. Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//			else if(request.getRequestType() == 2) {
-//				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was not found. " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//			else if(request.getRequestType() == 4) {
-//				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was unable to be removed. " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
-//			}
-//		}
-//	}
+	private static void readRequestFromServer(Request request) {
+		if(request.getRequestStatus()) {
+			if(request.getRequestType() == 2) {
+				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was found! " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
+			}
+			
+		}
+		else if(!request.getRequestStatus()) {
+			
+			if(request.getRequestType() == 2) {
+				JOptionPane.showMessageDialog(null, "The file" + request.getFileName() + " was not found. " + "Request type: " + request.getRequestType() + ", Request status: " + request.getRequestStatus());
+			}
+			
+		}
+	}
 	private static Request getRequest(Request request, Node node, Scanner scanner, User user) {
 		
 		
@@ -287,7 +278,7 @@ public class Client
 
 			removeFile = new File(name, type);
 			request.setFile(removeFile);
-			JOptionPane.showMessageDialog(null, "Request file name from client object" + request.getFileName());
+			
 		}
 
 		return request;
