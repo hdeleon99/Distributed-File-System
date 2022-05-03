@@ -1,28 +1,32 @@
+package mainpackage;
+import java.io.Serializable;
 
-public class User
+public class User implements Serializable
 {
 	private String userID;
 	private String password;
-	private boolean usingClient = false;
 	private boolean supervisor = false;
-	private Client client = null;
 	
 	public User(String userID, String password)
 	{
 		this.userID = userID;
 		this.password = password;
-		//If 1st character of "userID" == 'S' set "supervisor" = true
+		if (userID.charAt(0) == 'S') {supervisor = true;} //If 1st character of "userID" == 'S' set "supervisor" = true
 	}
 	
-	public boolean GetUsingClient() {return usingClient;}
-	public void SetUsingClient(boolean usingClient) {this.usingClient = usingClient;}
+	public String getID() {return userID;}
+	public String GetPassword() {return password;}
 	
 	public boolean GetSupervisor() {return supervisor;}
 	
-	public Client GetClient() //Lazy singleton to make sure this "User" instance only uses 1 client software at a time
+	public boolean UserEqualsUser(User user1, User user2)
 	{
-		if (client == null) {client = new Client();}
-		return client;
+		String ID1 = user1.getID();
+		String password1 = user1.GetPassword();
+		String ID2 = user2.getID();
+		String password2 = user2.GetPassword();
+		
+		if (ID1.equals(ID2) && password1.equals(password2)) {return true;}
+		return false;
 	}
-	
 }
