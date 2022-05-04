@@ -18,7 +18,7 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(1228);
+			server = new ServerSocket(1235);
 			server.setReuseAddress(true);
 			boolean shutdown = false;
 			while (!shutdown) {
@@ -71,22 +71,28 @@ public class Server {
 				nodes.add(rqst.getNode());
 				logMsg += logActions[5] + rqst.getNode().GetName() + "\n";
 			}
-			int pos = NodePos(rqst.getNode());
+			int currentPos = NodePos(rqst.getNode());
+			int nodePos_file = -1;
+			// if downloading file or removing file -> get node position for file
+			if(rqst.getRequestType() == 2 || rqst.getRequestType() == 4) {
+				nodePos_file = containsFile(rqst.getFile(), hidden);
+			}
+			
 			switch(rqst.getRequestType()) {
 			case 0:// exit
 				rqst.setLoggedIn(false);
 				rqst.setRequestStatus(true);
-				nodes.remove(pos);
-				logMsg += rqst.getNode().GetCurrentUser().getID();
+				nodes.remove(currentPos);
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 1:// upload file
-				AppendFileList(rqst.getFile(), pos, hidden, supervisor);
+				AppendFileList(rqst.getFile(), currentPos, hidden, supervisor);
 				logMsg += rqst.getFileName();
 				rqst.setRequestStatus(true);
 				break;
 			case 2:// request file
-				if(containsFile(pos, rqst.getFile() , hidden)) {
-					rqst.setFile(getFile(pos, hidden, rqst.getFileName(), rqst.getFileType()));
+				if(nodePos_file != -1) {
+					rqst.setFile(getFile(nodePos_file, hidden, rqst.getFileName(), rqst.getFileType()));
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
 				}
@@ -94,11 +100,11 @@ public class Server {
 			case 3:// view log
 				if(supervisor) { rqst.setLog(log); }
 				rqst.setRequestStatus(true);
-				logMsg += rqst.getNode().GetCurrentUser().getID();
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 4:// remove file
-				if(supervisor && containsFile(pos, rqst.getFile(), hidden)) {
-					DeleteFromFileList(pos, hidden, rqst.getFileName(), rqst.getFileType());
+				if(supervisor && containsFile(rqst.getFile(), hidden) != -1) {
+					DeleteFromFileList(nodePos_file, hidden, rqst.getFileName(), rqst.getFileType());
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
 				}
@@ -147,11 +153,16 @@ public class Server {
 		
 		public boolean getShutDown() { return shutdown; }
 		
-		public boolean containsFile(int pos, File file, boolean hidden) {
+		public int containsFile(File file, boolean hidden) {
 			if(hidden) {
-				return nodes.get(pos).GetHiddenStorage().FileListContains(file);
+				for(int i = 0; i < nodes.size(); i++) {
+					if(nodes.get(i).GetHiddenStorage().FileListContains(file)) { return i; }
+				}
 			}
-			return nodes.get(pos).GetUnhiddenStorage().FileListContains(file);
+			for(int i = 0; i < nodes.size(); i++) {
+				if(nodes.get(i).GetUnhiddenStorage().FileListContains(file)) { return i; }
+			}
+			return -1;
 		}
 		
 		public File getFile(int pos, boolean hidden, String fileName, String fileType) {
