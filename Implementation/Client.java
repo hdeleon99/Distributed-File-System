@@ -45,7 +45,7 @@ public class Client
 			while(request.isLoggedIn()) {
 				request.setErrStatus(false);
 				request.setRequestStatus(false);
-				socket = new Socket("localhost", 1228);
+				socket = new Socket("localhost", 1245);
 				
 				request = getRequest(request, node, scanner, user);
 				
@@ -58,7 +58,7 @@ public class Client
 				request = (Request) objectInputStream.readObject();
 				System.out.println("Request status: " + request.getRequestStatus());
 				readRequestFromServer(request);
-				if (request.getErrorStatus()) {
+				if (request.getErrStatus()) {
 					JOptionPane.showMessageDialog(null, request.printErrMsg());
 				}
 				inputStream.close();
