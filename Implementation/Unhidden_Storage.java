@@ -1,13 +1,11 @@
 package Main;
+import java.util.*;
 import java.io.Serializable;
 import javax.swing.JOptionPane;
 
 public class Unhidden_Storage implements Storage, Serializable
 {
-	private File[] fileList = new File[7]; //Base line storage is 7
-	private int numFiles = 0;
-	
-	public File[] GetFileList() {return fileList;}
+	private List<File> fileList = new ArrayList<File>();
 	
 	public void AppendFileList(File file)
 	{
@@ -16,24 +14,17 @@ public class Unhidden_Storage implements Storage, Serializable
 			JOptionPane.showMessageDialog(null, "File already exists in Unhidden Storage");
 			return;
 		}
-		if (numFiles == fileList.length) //If "fileList" is full, double it's size
-		{
-			File tmp[] = new File[2 * numFiles];
-		    System.arraycopy(fileList, 0, tmp, 0, numFiles); 
-		    fileList = tmp;
-		    tmp = null;
-		}
-		fileList[numFiles] = file;
-		++numFiles;
+		fileList.add(file);
 		JOptionPane.showMessageDialog(null, "successfully appended file");
+		PrintFileList();
 	}
 	public void DeleteFromFileList(String fileName, String fileType)
 	{
-		int location = -1;; //Location of possible deletion
-		for (int i = 0; i < numFiles; i++)
+		int location = -1; //Location of possible deletion
+		for (int i = 0; i < fileList.size(); i++)
 		{
-			String name = fileList[i].GetName();
-			String type = fileList[i].GetType();
+			String name = fileList.get(i).GetName();
+			String type = fileList.get(i).GetType();
 			if (fileName.equals(name) && fileType.equals(type)) {location = i; break;}
 		}
 		if (location == -1) //If the file isn't apart of the file list
@@ -41,25 +32,26 @@ public class Unhidden_Storage implements Storage, Serializable
 			JOptionPane.showMessageDialog(null, "File doesn't exist in Unhidden Storage");
 			return;
 		}
-		for (int i = location; i < numFiles - 1; i++) {fileList[i] = fileList[i + 1];} //Delete this user from list
-		--numFiles;
-		JOptionPane.showMessageDialog(null, "Successfully delted file");
+		fileList.remove(location);
+		PrintFileList();
+		//JOptionPane.showMessageDialog(null, "Successfully deleted file");
 	}
 	
 	public boolean FileListContains(File file)
 	{
-		for (int i = 0; i < numFiles; i++)
+		PrintFileList();
+		for (int i = 0; i < fileList.size(); i++)
 		{
-			if (FileEqualsFile(file, fileList[i])) {return true;}
+			if (FileEqualsFile(file, fileList.get(i))) {return true;}
 		}
 		return false;
 	}
 	
 	public File GetFile(String name, String type)
 	{
-		for (int i = 0; i < numFiles; i++)
+		for (int i = 0; i < fileList.size(); i++)
 		{
-			if (fileList[i].GetName().equals(name) && fileList[i].GetType().equals(type)) {return fileList[i];}
+			if (fileList.get(i).GetName().equals(name) && fileList.get(i).GetType().equals(type)) {return fileList.get(i);}
 		}
 		return null;
 	}
@@ -71,9 +63,16 @@ public class Unhidden_Storage implements Storage, Serializable
 		String name2 = file2.GetName();
 		String type2 = file2.GetType();
 		
-		if (name1.equals(name2) && type1.equals(type2)) {return true;}
-		return false;
+		return (name1.equals(name2) && type1.equals(type2));
 	}
 	
-	public int GetNumFiles() {return numFiles;}
+	public void PrintFileList()
+	{
+		for (int i = 0; i < fileList.size(); i++)
+		{
+			System.out.println(fileList.get(i).GetName());
+			System.out.println(fileList.get(i).GetType());
+			System.out.println('\n');
+		}
+	}
 }

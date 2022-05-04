@@ -42,7 +42,7 @@ public class Client
 			while(request.isLoggedIn()) {
 				request.setErrStatus(false);
 				request.setRequestStatus(false);
-				socket = new Socket("localhost", 1238);
+				socket = new Socket("localhost", 1230);
 				
 				request = getRequest(request, node, scanner, user);
 				
