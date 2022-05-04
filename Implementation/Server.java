@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+import javax.xml.crypto.NodeSetData;
+
+
 
 public class Server {
 	private static Log log = new Log(); //Eager singleton to ensure only 1 log | "static" shares this log across the entire system
@@ -18,7 +21,7 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(1230);
+			server = new ServerSocket(1245);
 			server.setReuseAddress(true);
 			boolean shutdown = false;
 			while (!shutdown) {
@@ -67,7 +70,7 @@ public class Server {
 			boolean supervisor = rqst.getNode().GetCurrentUser().GetSupervisor();
 			String logMsg = "";
 			// making sure that the node exists in the node list by default
-			if(!nodes.contains(rqst.getNode())) {
+			if(NodePos(rqst.getNode()) == -1) {
 				nodes.add(rqst.getNode());
 				logMsg += logActions[5] + rqst.getNode().GetName() + "\n";
 			}
@@ -82,7 +85,6 @@ public class Server {
 			case 0:// exit
 				rqst.setLoggedIn(false);
 				rqst.setRequestStatus(true);
-				//nodes.remove(currentPos);
 				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 1:// upload file
@@ -149,11 +151,19 @@ public class Server {
 			}
 		}
 		
-		public int NodePos(Node node) { return nodes.indexOf(node); }
+		public int NodePos(Node node) {
+            for(int i = 0; i < nodes.size(); i++) {
+                if(node.GetName().equals(nodes.get(i).GetName())) {
+                    return i;
+                }
+            }
+            return -1; // this will never execute
+        }
 		
 		public boolean getShutDown() { return shutdown; }
 		
 		public int containsFile(File file, boolean hidden) {
+			System.out.println("Number of nodes: " + nodes.size());
 			if(hidden) {
 				for(int i = 0; i < nodes.size(); i++) {
 					if(nodes.get(i).GetHiddenStorage().FileListContains(file)) { return i; }
@@ -171,5 +181,12 @@ public class Server {
 			}
 			return nodes.get(pos).GetUnhiddenStorage().GetFile(fileName,fileType);
 		}
+		
+//		public boolean containsNode(Node node) {
+//			for(int i = 0; i < nodes.size(); i++) {
+//				if(node.GetName().equals(nodes.get(i).GetName())) { return true; }
+//			}
+//			return false;
+//		}
 	}
 }

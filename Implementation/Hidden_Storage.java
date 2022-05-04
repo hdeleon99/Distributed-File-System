@@ -7,6 +7,8 @@ public class Hidden_Storage implements Storage, Serializable
 {
 	private List<File> fileList = new ArrayList<File>();
 	
+	public List<File> GetFileList() {return fileList;}
+	
 	public void AppendFileList(File file)
 	{
 		if (FileListContains(file)) //If "fileList" already contains the file
@@ -33,7 +35,7 @@ public class Hidden_Storage implements Storage, Serializable
 			return;
 		}
 		fileList.remove(location);
-		//JOptionPane.showMessageDialog(null, "Successfully deleted file");
+		JOptionPane.showMessageDialog(null, "Successfully deleted file");
 		PrintFileList();
 	}
 	
@@ -70,8 +72,7 @@ public class Hidden_Storage implements Storage, Serializable
 	{
 		for (int i = 0; i < fileList.size(); i++)
 		{
-			System.out.println(fileList.get(i).GetName());
-			System.out.println(fileList.get(i).GetType());
+			JOptionPane.showMessageDialog(null, fileList.get(i).GetName() + ' ' + fileList.get(i).GetType() + '\n');
 		}
 	}
 }

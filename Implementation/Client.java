@@ -8,7 +8,9 @@ import javax.swing.*;
 public class Client
 {
 		
-	public Client(){}
+	public Client(){
+		
+	}
 	
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -21,6 +23,7 @@ public class Client
 			Socket socket = new Socket();
 			Node node;
 			
+			//String nodeName = "";
 			// ask user for name of their computer, pass it into initialized node object
 			String nodeName = JOptionPane.showInputDialog("Enter the name of your system: ");
 			
@@ -42,7 +45,7 @@ public class Client
 			while(request.isLoggedIn()) {
 				request.setErrStatus(false);
 				request.setRequestStatus(false);
-				socket = new Socket("localhost", 1230);
+				socket = new Socket("localhost", 1245);
 				
 				request = getRequest(request, node, scanner, user);
 				
@@ -54,11 +57,13 @@ public class Client
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 				request = (Request) objectInputStream.readObject();
 				System.out.println("Request status: " + request.getRequestStatus());
-				//JOptionPane.showMessageDialog(null, "Request status: " + request.getRequestStatus());
 				readRequestFromServer(request);
-				if (request.getErrorStatus()) {JOptionPane.showMessageDialog(null, request.printErrMsg());}
+				if (request.getErrorStatus()) {
+					JOptionPane.showMessageDialog(null, request.printErrMsg());
+				}
 				inputStream.close();
 			}
+			// set node.currentUser(null);
 			scanner.close();
 			socket.close();
 			

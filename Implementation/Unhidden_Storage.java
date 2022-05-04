@@ -7,6 +7,8 @@ public class Unhidden_Storage implements Storage, Serializable
 {
 	private List<File> fileList = new ArrayList<File>();
 	
+	public List<File> GetFileList() {return fileList;}
+	
 	public void AppendFileList(File file)
 	{
 		if (FileListContains(file)) //If "fileList" already contains the file
@@ -16,7 +18,6 @@ public class Unhidden_Storage implements Storage, Serializable
 		}
 		fileList.add(file);
 		JOptionPane.showMessageDialog(null, "successfully appended file");
-		PrintFileList();
 	}
 	public void DeleteFromFileList(String fileName, String fileType)
 	{
@@ -33,13 +34,12 @@ public class Unhidden_Storage implements Storage, Serializable
 			return;
 		}
 		fileList.remove(location);
-		PrintFileList();
-		//JOptionPane.showMessageDialog(null, "Successfully deleted file");
+		JOptionPane.showMessageDialog(null, "Successfully deleted file");
 	}
 	
 	public boolean FileListContains(File file)
 	{
-		PrintFileList();
+		//PrintFileList();
 		for (int i = 0; i < fileList.size(); i++)
 		{
 			if (FileEqualsFile(file, fileList.get(i))) {return true;}
@@ -70,9 +70,7 @@ public class Unhidden_Storage implements Storage, Serializable
 	{
 		for (int i = 0; i < fileList.size(); i++)
 		{
-			System.out.println(fileList.get(i).GetName());
-			System.out.println(fileList.get(i).GetType());
-			System.out.println('\n');
+			JOptionPane.showMessageDialog(null, fileList.get(i).GetName() + ' ' + fileList.get(i).GetType() + '\n');
 		}
 	}
 }
