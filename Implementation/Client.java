@@ -8,9 +8,7 @@ import javax.swing.*;
 public class Client
 {
 		
-	public Client(){
-		
-	}
+	public Client(){}
 	
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -56,13 +54,11 @@ public class Client
 				ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 				request = (Request) objectInputStream.readObject();
 				System.out.println("Request status: " + request.getRequestStatus());
+				//JOptionPane.showMessageDialog(null, "Request status: " + request.getRequestStatus());
 				readRequestFromServer(request);
-				if (request.getErrorStatus()) {
-					JOptionPane.showMessageDialog(null, request.printErrMsg());
-				}
+				if (request.getErrorStatus()) {JOptionPane.showMessageDialog(null, request.printErrMsg());}
 				inputStream.close();
 			}
-			// set node.currentUser(null);
 			scanner.close();
 			socket.close();
 			

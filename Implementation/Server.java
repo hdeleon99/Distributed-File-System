@@ -8,6 +8,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
 
 public class Server {
 	private static Log log = new Log(); //Eager singleton to ensure only 1 log | "static" shares this log across the entire system
@@ -24,6 +26,7 @@ public class Server {
 			while (!shutdown) {
 				Socket client = server.accept();
 				System.out.println("New client connected" + client.getInetAddress().getHostAddress());
+				//JOptionPane.showMessageDialog(null, "New client connected" + client.getInetAddress().getHostAddress());
 				ClientHandler clientSock = new ClientHandler(client);
 				new Thread(clientSock).start();
 				shutdown = clientSock.getShutDown();
