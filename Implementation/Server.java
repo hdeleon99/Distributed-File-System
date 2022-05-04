@@ -18,7 +18,7 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(1234);
+			server = new ServerSocket(1230);
 			server.setReuseAddress(true);
 			boolean shutdown = false;
 			while (!shutdown) {
@@ -67,7 +67,7 @@ public class Server {
 			boolean supervisor = rqst.getNode().GetCurrentUser().GetSupervisor();
 			String logMsg = "";
 			// making sure that the node exists in the node list by default
-			if(!nodes.contains(rqst.getNode())) {
+			if(!containsNode(rqst.getNode())) {
 				nodes.add(rqst.getNode());
 				logMsg += logActions[5] + rqst.getNode().GetName() + "\n";
 			}
@@ -82,8 +82,7 @@ public class Server {
 			case 0:// exit
 				rqst.setLoggedIn(false);
 				rqst.setRequestStatus(true);
-				nodes.remove(currentPos);
-				logMsg += rqst.getNode().GetCurrentUser().getID();
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 1:// upload file
 				AppendFileList(rqst.getFile(), currentPos, hidden, supervisor);
@@ -100,10 +99,10 @@ public class Server {
 			case 3:// view log
 				if(supervisor) { rqst.setLog(log); }
 				rqst.setRequestStatus(true);
-				logMsg += rqst.getNode().GetCurrentUser().getID();
+				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 4:// remove file
-				if(supervisor && containsFile(rqst.getFile(), hidden) != -1) {
+				if(supervisor && nodePos_file != -1) {
 					DeleteFromFileList(nodePos_file, hidden, rqst.getFileName(), rqst.getFileType());
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
@@ -170,6 +169,13 @@ public class Server {
 				return nodes.get(pos).GetHiddenStorage().GetFile(fileName, fileType);
 			}
 			return nodes.get(pos).GetUnhiddenStorage().GetFile(fileName,fileType);
+		}
+		
+		public boolean containsNode(Node node) {
+			for(int i = 0; i < nodes.size(); i++) {
+				if(node.GetName().equals(nodes.get(i).GetName())) { return true; }
+			}
+			return false;
 		}
 	}
 }
