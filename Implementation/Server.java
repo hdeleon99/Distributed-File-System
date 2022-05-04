@@ -8,6 +8,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+import javax.xml.crypto.NodeSetData;
+
+
 
 public class Server {
 	private static Log log = new Log(); //Eager singleton to ensure only 1 log | "static" shares this log across the entire system
@@ -18,7 +21,7 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(1234);
+			server = new ServerSocket(1245);
 			server.setReuseAddress(true);
 			boolean shutdown = false;
 			while (!shutdown) {
@@ -67,26 +70,31 @@ public class Server {
 			boolean supervisor = rqst.getNode().GetCurrentUser().GetSupervisor();
 			String logMsg = "";
 			// making sure that the node exists in the node list by default
-			if(!nodes.contains(rqst.getNode())) {
+			if(NodePos(rqst.getNode()) == -1) {
 				nodes.add(rqst.getNode());
 				logMsg += logActions[5] + rqst.getNode().GetName() + "\n";
 			}
-			int pos = NodePos(rqst.getNode());
+			int currentPos = NodePos(rqst.getNode());
+			int nodePos_file = -1;
+			// if downloading file or removing file -> get node position for file
+			if(rqst.getRequestType() == 2 || rqst.getRequestType() == 4) {
+				nodePos_file = containsFile(rqst.getFile(), hidden);
+			}
+			
 			switch(rqst.getRequestType()) {
 			case 0:// exit
 				rqst.setLoggedIn(false);
 				rqst.setRequestStatus(true);
-				nodes.remove(pos);
 				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 1:// upload file
-				AppendFileList(rqst.getFile(), pos, hidden, supervisor);
+				AppendFileList(rqst.getFile(), currentPos, hidden, supervisor);
 				logMsg += rqst.getFileName();
 				rqst.setRequestStatus(true);
 				break;
 			case 2:// request file
-				if(containsFile(pos, rqst.getFile() , hidden)) {
-					rqst.setFile(getFile(pos, hidden, rqst.getFileName(), rqst.getFileType()));
+				if(nodePos_file != -1) {
+					rqst.setFile(getFile(nodePos_file, hidden, rqst.getFileName(), rqst.getFileType()));
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
 				}
@@ -97,8 +105,8 @@ public class Server {
 				logMsg += rqst.getNode().GetCurrentUser().GetUserID();
 				break;
 			case 4:// remove file
-				if(supervisor && containsFile(pos, rqst.getFile(), hidden)) {
-					DeleteFromFileList(pos, hidden, rqst.getFileName(), rqst.getFileType());
+				if(supervisor && nodePos_file != -1) {
+					DeleteFromFileList(nodePos_file, hidden, rqst.getFileName(), rqst.getFileType());
 					logMsg += rqst.getFileName();
 					rqst.setRequestStatus(true);
 				}
@@ -143,15 +151,28 @@ public class Server {
 			}
 		}
 		
-		public int NodePos(Node node) { return nodes.indexOf(node); }
+		public int NodePos(Node node) {
+            for(int i = 0; i < nodes.size(); i++) {
+                if(node.GetName().equals(nodes.get(i).GetName())) {
+                    return i;
+                }
+            }
+            return -1; // this will never execute
+        }
 		
 		public boolean getShutDown() { return shutdown; }
 		
-		public boolean containsFile(int pos, File file, boolean hidden) {
+		public int containsFile(File file, boolean hidden) {
+			System.out.println("Number of nodes: " + nodes.size());
 			if(hidden) {
-				return nodes.get(pos).GetHiddenStorage().FileListContains(file);
+				for(int i = 0; i < nodes.size(); i++) {
+					if(nodes.get(i).GetHiddenStorage().FileListContains(file)) { return i; }
+				}
 			}
-			return nodes.get(pos).GetUnhiddenStorage().FileListContains(file);
+			for(int i = 0; i < nodes.size(); i++) {
+				if(nodes.get(i).GetUnhiddenStorage().FileListContains(file)) { return i; }
+			}
+			return -1;
 		}
 		
 		public File getFile(int pos, boolean hidden, String fileName, String fileType) {
@@ -160,5 +181,12 @@ public class Server {
 			}
 			return nodes.get(pos).GetUnhiddenStorage().GetFile(fileName,fileType);
 		}
+		
+//		public boolean containsNode(Node node) {
+//			for(int i = 0; i < nodes.size(); i++) {
+//				if(node.GetName().equals(nodes.get(i).GetName())) { return true; }
+//			}
+//			return false;
+//		}
 	}
 }
