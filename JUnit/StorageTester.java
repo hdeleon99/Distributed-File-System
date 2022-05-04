@@ -21,14 +21,14 @@ public class StorageTester
 		
 		node.GetUnhiddenStorage().AppendFileList(file);
 		node.GetHiddenStorage().AppendFileList(file);
-		System.out.println("Unhidden Name: " + node.GetUnhiddenStorage().GetFileList()[0].GetName());
-		System.out.println("Unhidden Type: " + node.GetUnhiddenStorage().GetFileList()[0].GetType());
-		System.out.println("Hidden Name: " + node.GetHiddenStorage().GetFileList()[0].GetName());
-		System.out.println("Hidden Type: " + node.GetHiddenStorage().GetFileList()[0].GetType());
-		System.out.println("Unhidden Number of Files: " + node.GetUnhiddenStorage().GetNumFiles());
-		System.out.println("Hidden number of Files:: " + node.GetHiddenStorage().GetNumFiles());
+		System.out.println("Unhidden Name: " + node.GetUnhiddenStorage().GetFileList().get(0).GetName());
+		System.out.println("Unhidden Type: " + node.GetUnhiddenStorage().GetFileList().get(0).GetType());
+		System.out.println("Hidden Name: " + node.GetHiddenStorage().GetFileList().get(0).GetName());
+		System.out.println("Hidden Type: " + node.GetHiddenStorage().GetFileList().get(0).GetType());
+		System.out.println("Unhidden Number of Files: " + node.GetUnhiddenStorage().GetFileList().size());
+		System.out.println("Hidden number of Files:: " + node.GetHiddenStorage().GetFileList().size());
 		
-		assertTrue(node.GetUnhiddenStorage().GetNumFiles() == 1 && node.GetHiddenStorage().GetNumFiles() == 1);
+		assertTrue(node.GetUnhiddenStorage().GetFileList().size() == 1 && node.GetHiddenStorage().GetFileList().size() == 1);
 	}
 	
 	@Test
@@ -65,9 +65,9 @@ public class StorageTester
 		hidden.AppendFileList(file7);
 		hidden.AppendFileList(file8);
 		
-		System.out.println("Number of unhidden files: " + unhidden.GetNumFiles());
-		System.out.println("Number of hidden files: " + hidden.GetNumFiles());
-		assertTrue(unhidden.GetNumFiles() == 8 && hidden.GetNumFiles() == 8);
+		System.out.println("Number of unhidden files: " + unhidden.GetFileList().size());
+		System.out.println("Number of hidden files: " + hidden.GetFileList().size());
+		assertTrue(unhidden.GetFileList().size() == 8 && hidden.GetFileList().size() == 8);
 	}
 	
 	@Test
